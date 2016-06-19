@@ -2,31 +2,40 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#define STATUSFILENAME "/pid"
+#include <sys/types.h>
+#include <sys/wait.h>
+#define PARENT_PID_FILENAME "/pid_parent"
+#define CHILD_PID_FILENAME "/pid_child"
 
 int main(int argc, char **argv) {
     int pid = fork();
     if ( pid ) {
-        char localfilename[80];
-        sprintf(localfilename, "%s%s", getenv("HOME"), STATUSFILENAME); 
-        FILE *f = fopen("pid", "w");
-        fprintf (f, "%d", pid);
+        int state;
+        wait (&state);
     }
     else {
-        sigset_t mask;
-        sigset_t orig_mask;
+        pid_t pid, ppid;
+        pid = getpid();
+        ppid = getppid();
         
+        char localfilename[80];
+        sprintf(localfilename, "%s%s", getenv("HOME"), CHILD_PID_FILENAME); 
+        FILE *f = fopen(localfilename, "w");
+        fprintf (f, "%d", pid);
+        fclose(f);
+        
+        sprintf(localfilename, "%s%s", getenv("HOME"), PARENT_PID_FILENAME); 
+        f = fopen(localfilename, "w");
+        fprintf (f, "%d", ppid);
+        fclose(f);
+
+        sigset_t mask;
+        int result;
+
         sigemptyset (&mask);
         sigaddset (&mask, SIGTERM);
-        sigaddset (&mask, SIGINT);
-        
-        if ( sigprocmask(SIG_BLOCK, &mask, &orig_mask)) {
-            printf ("Not blocked :(\n");
-        }
-        else {
-            printf ("Blocked!\n");
-            sleep(100000);
-        };
+        sigwait(&mask, &result);
+        printf("Child exited\n");
     }
     
     return 0;
