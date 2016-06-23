@@ -1,7 +1,7 @@
 all: exe
 
-exe: test.cpp
-	gcc -fPIC test.cpp -o shell
+exe: test.c
+	c99 -fPIC test.c -o shell
 	
 clean:
 	-rm shell 2>/dev/null
