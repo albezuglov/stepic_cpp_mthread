@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #define BUFFSIZE 1000
+#define RESULT_FILENAME "/result.out"
 
 // inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
 // {
@@ -47,16 +48,19 @@
     
 // }
 int main(int argc, char **argv) {
-    // char localfilename[80];
-    // sprintf(localfilename, "%s%s", getenv("HOME"), RESULT_FILENAME);
+    char localfilename[80];
+    sprintf(localfilename, "%s%s", getenv("HOME"), RESULT_FILENAME);
+    FILE *outfile = fopen(localfilename, "w+");
+    
     char buff[BUFFSIZE], result[BUFFSIZE];
     fgets(buff, BUFFSIZE, stdin);
     
     FILE *cmd = popen(buff, "r");
     
     while ( fgets(result, BUFFSIZE, cmd) != NULL ) {
-        puts(result);
+        fputs(result, outfile);
     }
+    fclose (outfile);
     //FILE *f = fopen(localfilename, "w");
     // string input = "who | sort | uniq -c | sort -nk1";
     // istringstream ss(input);
