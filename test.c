@@ -15,15 +15,14 @@ int main(int argc, char **argv) {
     char buff[BUFFSIZE];
     int res_in, res_out;
 
-    if ( (res_in=mkfifo(in_sock_name, 0444)) || (res_out=mkfifo(in_sock_name, 0666))) {
+    if ( (res_in=mkfifo(in_sock_name, 0444)) || (res_out=mkfifo(out_sock_name, 0666))) {
         printf("%u  %u", res_in, res_out);
 //        return -1;
     }
 
-        
     FILE *in_sock = fopen(in_sock_name, "r");
-    FILE *out_sock = fopen(out_sock_name, "w");
-    
+    FILE *out_sock = fopen(out_sock_name, "w");  
+
     while ( fgets(buff, BUFFSIZE, in_sock) != NULL)
         fputs(buff, out_sock );
     
