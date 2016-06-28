@@ -47,5 +47,6 @@ main(int argc, char **argv)
         parent(sv[0]);
         break;
     }
+    sleep (50);
     return 0;
 }
