@@ -1,32 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
-#define BUFFSIZE 1000
-#define IN_SOCKET "/in.fifo"
-#define OUT_SOCKET "/out.fifo"
+#define BUFFSIZE 80
+#define OUT_FILE "/message.txt"
 
+struct message {
+    long type;
+    char value[BUFFSIZE];
+};
 
 int main(int argc, char **argv) {
-    char in_sock_name[80], out_sock_name[80];
-    sprintf(in_sock_name, "%s%s", getenv("HOME"), IN_SOCKET);
-    sprintf(out_sock_name, "%s%s", getenv("HOME"), OUT_SOCKET);
-    char buff[BUFFSIZE];
-    int res_in, res_out;
 
-    if ( (res_in=mkfifo(in_sock_name, 0444)) || (res_out=mkfifo(out_sock_name, 0666))) {
-        printf("%u  %u", res_in, res_out);
-//        return -1;
+    message *msg;
+
+    key_t key = ftok("/tmp/msg.temp", 1);
+    int msgid = msgget (key, IPC_CREAT | 0666);
+    
+    if ( msgrcv(msgid, msg, BUFFSIZE, 0, 0 ) > 0 ) {
+        char out_filename[80];
+        sprintf(out_filename, "%s%s", getenv("HOME"), OUT_FILE);
+        FILE *out = fopen(out_filename, "w+");
+        fputs(msg->value, out );
+        fclose(out);
     }
 
-    FILE *in_sock = fopen(in_sock_name, "r");
-    FILE *out_sock = fopen(out_sock_name, "w");  
-
-    while ( fgets(buff, BUFFSIZE, in_sock) != NULL)
-        fputs(buff, out_sock );
-    
-    fclose(in_sock);
-    fclose(out_sock);
     return 0;
 }
