@@ -17,15 +17,21 @@ int main(int argc, char **argv) {
         return 1;
     }
     
-    int semafor = semget(key, 16, IPC_CREAT | 0666); 
-    if( semafor == -1 ) {
+    int semid = semget(key, 16, IPC_CREAT | 0666); 
+    if( semid == -1 ) {
         perror( "semget" );
         return 1;
     }
-    int i;
-    for (i=0; i < 16; i++ ) {
-        
+
+    struct sembuf sops[16];
+    for (int i = 0; i < 16; i++) {
+        sops[i].sem_num = i;
+        sops[i].sem_op = i;
+        sops[i].sem_flg = 0;
     }
 
+    semop(semid, sops, 16);
+
+    perror("Errno after semop: ");
     return 0;
 }
