@@ -1,22 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>           /* For O_* constants */
-#include <sys/stat.h>        /* For mode constants */
-#include <semaphore.h>
+#include <sys/ipc.h>
+#include <sys/shm.h> 
 
-#define BUFFSIZE 1000
+#define BUFFSIZE 1048576
 #define OUT_FILE "/message.txt"
 
 
 
 int main(int argc, char **argv) {
     
-    sem_unlink("/test.sem");
-    sem_t *sem = sem_open("/test.sem", O_CREAT | O_RDWR, 0666, 66);
-    // if( &sem == -1 ) {
-    //     perror( "sem_open" );
-    //     return 1;
-    // }
+    key_t key = ftok("/tmp/mem.temp", 1);
+    if( key == -1 ) {
+        perror( "ftok" );
+        return 1;
+    }
+    
+    int shmid = shmget (key, BUFFSIZE, IPC_CREAT|0600);
+    if( shmid == -1 ) {
+        perror( "shmget" );
+        return 1;
+    }
 
+    char *data = shmat(shmid, 0, 0);
+    unsigned int i;
+    char *s;
+    s = data;
+    for(i = 0; i < 1048576; i++) 
+        *s++ = 42;
     return 0;
 }
