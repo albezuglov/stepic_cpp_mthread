@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/shm.h> 
+#include <sys/mman.h>
+#include <sys/stat.h>        /* For mode constants */
+#include <fcntl.h>           /* For O_* constants */
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/mman.h>
 
 #define BUFFSIZE 1048576
 #define OUT_FILE "/message.txt"
@@ -9,24 +13,25 @@
 
 
 int main(int argc, char **argv) {
+    shm_unlink("/test.shm");
     
-    key_t key = ftok("/tmp/mem.temp", 1);
-    if( key == -1 ) {
-        perror( "ftok" );
-        return 1;
-    }
-    
-    int shmid = shmget (key, BUFFSIZE+2, IPC_CREAT|0666);
+    int shmid = shm_open ("/test.shm", O_CREAT|O_RDWR, 0666);
     if( shmid == -1 ) {
-        perror( "shmget" );
+        perror( "shm_open" );
         return 1;
     }
-
-    char *data = shmat(shmid, 0, 0);
-    if( data == -1 ) {
-        perror( "shmat" );
+    
+    int res = ftruncate(shmid, BUFFSIZE);
+    if( res == -1 ) {
+        perror( "ftruncate" );
         return 1;
-    }    
+    }
+    
+    char *data = (char*)mmap(0, BUFFSIZE, PROT_READ|PROT_WRITE, MAP_SHARED, shmid, 0 );
+    if( data == -1 ) {
+        perror( "mmap" );
+        return 1;
+    }
     
     unsigned int i;
     char *s;
