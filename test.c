@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
         *s++ = 42;
     
     s = data;  
-    for(int i = 0; i < 1024*1024; ++i)
+    for(i = 0; i < 1024*1024; ++i)
         memset(s+i, 42, 1); //addr[i] = 42;
     return 0;
 }
