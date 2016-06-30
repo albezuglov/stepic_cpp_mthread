@@ -23,6 +23,11 @@ int main(int argc, char **argv) {
     }
 
     char *data = shmat(shmid, 0, 0);
+    if( data == -1 ) {
+        perror( "shmat" );
+        return 1;
+    }    
+    
     unsigned int i;
     char *s;
     s = data;
