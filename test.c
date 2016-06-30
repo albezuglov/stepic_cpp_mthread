@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     mtr.mq_curmsgs = 0;
     
     mq_unlink("/test.mq");
-    mqd_t queue = mq_open("/test.mq", O_CREAT | O_RDONLY, 0666, &mtr );
+    mqd_t queue = mq_open("/test.mq", O_CREAT | O_RDWR, 0666, &mtr );
     printf ("Result queue = --%d--\n", queue);
     // key_t key = ftok("/tmp/msg.temp", 1);
     // int msgid = msgget (key, IPC_CREAT | 0666);
