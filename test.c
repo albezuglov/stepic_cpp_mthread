@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     char msg[BUFFSIZE];
     memset ( msg, 0, BUFFSIZE );
     
-    int queue = mq_open("/test.mq", O_RDONLY);
+    int queue = mq_open("/test.mq", O_CREAT | O_RDWR);
 
     // key_t key = ftok("/tmp/msg.temp", 1);
     // int msgid = msgget (key, IPC_CREAT | 0666);
