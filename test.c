@@ -14,14 +14,16 @@
 
 int main(int argc, char **argv) {
 
-    char msg[BUFFSIZE];
-    memset ( msg, 0, BUFFSIZE );
+    char msg[BUFFSIZE+1];
+    memset ( msg, 0, BUFFSIZE+1 );
     
     struct mq_attr mtr;
-    mtr.mq_flags = O_RDWR;
+    mtr.mq_flags = 0;
     mtr.mq_maxmsg = 20;
+    mtr.mq_msgsize = BUFFSIZE;
+    mtr.mq_curmsgs = 0;
     
-    int queue = mq_open("/test.mq", O_CREAT, 0666, &mtr );
+    int queue = mq_open("/test.mq", O_CREAT | O_RDWR, 0666, &mtr );
     printf ("Result queue = --%d--\n", queue);
     // key_t key = ftok("/tmp/msg.temp", 1);
     // int msgid = msgget (key, IPC_CREAT | 0666);
