@@ -26,15 +26,21 @@ int main(int argc, char **argv) {
     char msg[BUFFSIZE+1];
     memset ( msg, 0, BUFFSIZE+1 );
     
-    struct mq_attr mtr;
-    mtr.mq_flags = 0;
-    mtr.mq_maxmsg = 20;
-    mtr.mq_msgsize = BUFFSIZE;
-    mtr.mq_curmsgs = 0;
-    
     mq_unlink("/test.mq");
-    mqd_t queue = mq_open("/test.mq", O_CREAT | O_RDWR, 0666, &mtr );
-    printf ("Result queue = --%d--\n", queue);
+    
+    struct mq_attr attr;
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = 10;
+    attr.mq_msgsize = BUFFSIZE;
+    attr.mq_curmsgs = 0;
+    
+    //char msgq_file = "/test.mq";
+    mqd_t queue = mq_open( "/test.mq", O_CREAT | O_RDWR, 0666, &attr );
+    if( queue == -1 ) {
+        perror( "mq_open" );
+        return 1;
+    }
+
     // key_t key = ftok("/tmp/msg.temp", 1);
     // int msgid = msgget (key, IPC_CREAT | 0666);
 
