@@ -26,7 +26,11 @@ int main(int argc, char **argv) {
     unsigned int i;
     char *s;
     s = data;
-    for(i = 0; i < 1048576; i++) 
+    for(i = 0; i < BUFFSIZE; i++) 
         *s++ = 42;
+    
+    s = data;  
+    for(int i = 0; i < 1024*1024; ++i)
+        memset(s+i, 42, 1); //addr[i] = 42;
     return 0;
 }
