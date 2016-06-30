@@ -22,13 +22,13 @@ int main(int argc, char **argv) {
     mtr.mq_maxmsg = 20;
     
     int queue = mq_open("/test.mq", O_CREAT, 0666, &mtr );
-
+    printf ("Result queue = --%d--\n", queue);
     // key_t key = ftok("/tmp/msg.temp", 1);
     // int msgid = msgget (key, IPC_CREAT | 0666);
 
     
     int res = mq_receive(queue, msg, BUFFSIZE, 0 );
-    printf ("Result = --%d--\n", res);
+    printf ("Result receive = --%d--\n", res);
     {
         char out_filename[80];
         sprintf(out_filename, "%s%s", getenv("HOME"), OUT_FILE);
