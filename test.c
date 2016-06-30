@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     
-    int shmid = shmget (key, BUFFSIZE, IPC_CREAT|0600);
+    int shmid = shmget (key, BUFFSIZE, IPC_CREAT|0666);
     if( shmid == -1 ) {
         perror( "shmget" );
         return 1;
